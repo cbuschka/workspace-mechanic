@@ -1,5 +1,6 @@
 package com.github.cbuschka.workspace_mechanic.integration_tests;
 
+import com.github.cbuschka.workspace_mechanic.internal.Database;
 import com.github.cbuschka.workspace_mechanic.internal.DirectoryMigrationSource;
 import com.github.cbuschka.workspace_mechanic.internal.MechanicConfig;
 import com.github.cbuschka.workspace_mechanic.internal.MigrationType;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 
 public class IntegrationTestWorkspace
 {
+	private Database database;
 	private File baseDir;
 
 	public IntegrationTestWorkspace()
@@ -21,6 +23,8 @@ public class IntegrationTestWorkspace
 
 		getMigrationsD().mkdirs();
 		getTestOutputD().mkdirs();
+
+		this.database = new Database(this.baseDir);
 	}
 
 	public File getMigrationsD()
@@ -66,6 +70,11 @@ public class IntegrationTestWorkspace
 	public File getTestOutputD()
 	{
 		return new File(baseDir, "test-output");
+	}
+
+	public Database getDatabase()
+	{
+		return database;
 	}
 
 	public class TestMigration

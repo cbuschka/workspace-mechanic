@@ -25,7 +25,7 @@ public class SingleScriptMigrationIntegrationTest
 	{
 		IntegrationTestWorkspace.TestMigration testMigration = testWorkspace.addSucceedingMigration("001_hello");
 
-		new Migrator().migrate(testWorkspace.getConfig());
+		new Migrator(testWorkspace.getDatabase()).migrate(testWorkspace.getConfig());
 
 		assertThat(testMigration.wasRun(), is(true));
 	}
