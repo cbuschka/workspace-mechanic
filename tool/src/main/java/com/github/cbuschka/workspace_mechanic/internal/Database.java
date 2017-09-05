@@ -5,10 +5,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Database
@@ -88,6 +86,12 @@ public class Database
 			this.data.migrations.put(migrationName, entry);
 		}
 		return entry;
+	}
+
+	public boolean isExecuted(String migrationName)
+	{
+		Entry entry = this.data.migrations.get(migrationName);
+		return entry != null && (entry.status == MigrationStatus.SUCCEEDED || entry.status == MigrationStatus.FAILED);
 	}
 
 	public void flush()

@@ -3,10 +3,7 @@ package com.github.cbuschka.workspace_mechanic.internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class Migrator
@@ -63,7 +60,13 @@ public class Migrator
 		List<Migration> migrations = new ArrayList<>();
 		for (MigrationSource migrationSource : mechanicConfig.getMigrationSources())
 		{
-			migrations.addAll(migrationSource.getMigrations());
+			for (Migration migration : migrationSource.getMigrations())
+			{
+				if (!database.isExecuted(migration.getName()))
+				{
+					migrations.add(migration);
+				}
+			}
 		}
 
 		return migrations;
