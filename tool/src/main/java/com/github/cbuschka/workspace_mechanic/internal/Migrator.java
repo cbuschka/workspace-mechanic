@@ -15,12 +15,12 @@ public class Migrator
 
 	private final Database database;
 
-	private final List<MigrationExecutor> migrationExecutors;
+	private final MigrationExecutor migrationExecutor;
 
-	public Migrator(Database database, List<MigrationExecutor> migrationExecutors)
+	public Migrator(Database database)
 	{
 		this.database = database;
-		this.migrationExecutors = new ArrayList<>(migrationExecutors);
+		this.migrationExecutor = new MigrationExecutor();
 	}
 
 	public MigrationOutcome migrate(MechanicConfig mechanicConfig)
@@ -52,7 +52,6 @@ public class Migrator
 		recordMigrationStarted(migration);
 		try
 		{
-			MigrationExecutor migrationExecutor = getMigrationExecutorFor(migration);
 			migrationExecutor.execute(migration);
 			recordMigrationSucceeded(migration);
 		}
@@ -61,19 +60,6 @@ public class Migrator
 			recordMigrationFailed(migration);
 			throw ex;
 		}
-	}
-
-	private MigrationExecutor getMigrationExecutorFor(Migration migration) throws MigrationFailedException
-	{
-		for (MigrationExecutor migrationExecutor : this.migrationExecutors)
-		{
-			if (migrationExecutor.handles(migration))
-			{
-				return migrationExecutor;
-			}
-		}
-
-		throw new MigrationFailedException("No migration executor for " + migration.getName() + ".");
 	}
 
 	private void recordMigrationFailed(Migration migration)

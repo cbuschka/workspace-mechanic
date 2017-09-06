@@ -1,8 +1,10 @@
 package com.github.cbuschka.workspace_mechanic.internal;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
+import java.io.InputStream;
 
 public class FileMigration implements Migration
 {
@@ -30,5 +32,11 @@ public class FileMigration implements Migration
 	public File getFile()
 	{
 		return file;
+	}
+
+	@Override
+	public InputStream getInputStream() throws IOException
+	{
+		return new BufferedInputStream(new FileInputStream(this.file));
 	}
 }

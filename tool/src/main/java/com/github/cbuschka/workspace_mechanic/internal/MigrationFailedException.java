@@ -6,4 +6,9 @@ public class MigrationFailedException extends Exception
 	{
 		super(message);
 	}
+
+	public MigrationFailedException(String message, Throwable cause)
+	{
+		super(message, cause);
+	}
 }

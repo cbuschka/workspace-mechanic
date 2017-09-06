@@ -2,7 +2,6 @@ package com.github.cbuschka.workspace_mechanic.integration_tests;
 
 import com.github.cbuschka.workspace_mechanic.internal.DirectoryMigrationSource;
 import com.github.cbuschka.workspace_mechanic.internal.MechanicConfig;
-import com.github.cbuschka.workspace_mechanic.internal.MigrationExecutor;
 import com.github.cbuschka.workspace_mechanic.internal.MigrationType;
 import com.github.cbuschka.workspace_mechanic.internal.database.Database;
 
@@ -31,11 +30,6 @@ public class IntegrationTestWorkspace
 	public File getMigrationsD()
 	{
 		return new File(baseDir, "migrations.d");
-	}
-
-	public File getBaseDir()
-	{
-		return baseDir;
 	}
 
 	public MechanicConfig getConfig()

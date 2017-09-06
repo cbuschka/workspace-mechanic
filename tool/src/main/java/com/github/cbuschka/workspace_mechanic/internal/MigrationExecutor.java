@@ -1,8 +1,26 @@
 package com.github.cbuschka.workspace_mechanic.internal;
 
-public interface MigrationExecutor
-{
-	boolean handles(Migration migration);
+import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 
-	void execute(Migration migration) throws MigrationFailedException;
+public class MigrationExecutor
+{
+	public void execute(Migration migration) throws MigrationFailedException
+	{
+		FileMigration fileMigration = (FileMigration) migration;
+		try
+		{
+			Process process = new ProcessBuilder().command(fileMigration.getFile().getAbsolutePath()).inheritIO().start();
+			int exitCode = process.waitFor();
+			if (exitCode != 0)
+			{
+				throw new MigrationFailedException(String.format("Migration %s failed with exit code %d.", fileMigration.getFile().getAbsolutePath(), exitCode));
+			}
+		}
+		catch (InterruptedException | IOException ex)
+		{
+			throw new UndeclaredThrowableException(ex);
+		}
+	}
+
 }
