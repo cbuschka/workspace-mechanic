@@ -1,4 +1,4 @@
-package com.github.cbuschka.workspace_mechanic.internal;
+package com.github.cbuschka.workspace_mechanic.internal.database;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Database
 {
@@ -19,23 +17,6 @@ public class Database
 
 	{
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-	}
-
-	public static class Data
-	{
-		public String version = "1";
-
-		public Map<String, Entry> migrations = new HashMap<>();
-	}
-
-	public enum MigrationStatus
-	{
-		STARTED, FAILED, SUCCEEDED;
-	}
-
-	public static class Entry
-	{
-		public MigrationStatus status;
 	}
 
 	public Database(File baseDir)

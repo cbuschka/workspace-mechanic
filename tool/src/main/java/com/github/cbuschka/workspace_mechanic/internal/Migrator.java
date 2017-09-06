@@ -1,5 +1,6 @@
 package com.github.cbuschka.workspace_mechanic.internal;
 
+import com.github.cbuschka.workspace_mechanic.internal.database.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +19,7 @@ public class Migrator
 		this.database = database;
 	}
 
-	public void migrate(MechanicConfig mechanicConfig)
+	public boolean migrate(MechanicConfig mechanicConfig)
 	{
 		List<Migration> pendingMigrations = collectPendingMigrations(mechanicConfig);
 
@@ -31,9 +32,11 @@ public class Migrator
 			catch (MigrationFailedException ex)
 			{
 				log.error("Migration {} failed. Aborting.", migration.getName(), ex);
-				return;
+				return false;
 			}
 		}
+
+		return true;
 	}
 
 	private void apply(Migration migration) throws MigrationFailedException
