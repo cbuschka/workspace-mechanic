@@ -27,21 +27,8 @@ public class FileMigration implements Migration
 		return type;
 	}
 
-	@Override
-	public void execute() throws MigrationFailedException
+	public File getFile()
 	{
-		try
-		{
-			Process process = new ProcessBuilder().command(this.file.getAbsolutePath()).inheritIO().start();
-			int exitCode = process.waitFor();
-			if (exitCode != 0)
-			{
-				throw new MigrationFailedException(String.format("Migration %s failed with exit code %d.", this.file.getAbsolutePath(), exitCode));
-			}
-		}
-		catch (InterruptedException | IOException ex)
-		{
-			throw new UndeclaredThrowableException(ex);
-		}
+		return file;
 	}
 }

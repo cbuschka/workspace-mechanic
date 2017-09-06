@@ -12,11 +12,15 @@ import java.util.List;
 public class Migrator
 {
 	private static Logger log = LoggerFactory.getLogger(Migrator.class);
+
 	private final Database database;
 
-	public Migrator(Database database)
+	private final List<MigrationExecutor> migrationExecutors;
+
+	public Migrator(Database database, List<MigrationExecutor> migrationExecutors)
 	{
 		this.database = database;
+		this.migrationExecutors = new ArrayList<>(migrationExecutors);
 	}
 
 	public MigrationOutcome migrate(MechanicConfig mechanicConfig)
@@ -31,7 +35,7 @@ public class Migrator
 		{
 			try
 			{
-				apply(migration);
+				execute(migration);
 			}
 			catch (MigrationFailedException ex)
 			{
@@ -43,12 +47,13 @@ public class Migrator
 		return MigrationOutcome.MIGRATION_SUCCEEDED;
 	}
 
-	private void apply(Migration migration) throws MigrationFailedException
+	public void execute(Migration migration) throws MigrationFailedException
 	{
 		recordMigrationStarted(migration);
 		try
 		{
-			migration.execute();
+			MigrationExecutor migrationExecutor = getMigrationExecutorFor(migration);
+			migrationExecutor.execute(migration);
 			recordMigrationSucceeded(migration);
 		}
 		catch (MigrationFailedException ex)
@@ -56,6 +61,19 @@ public class Migrator
 			recordMigrationFailed(migration);
 			throw ex;
 		}
+	}
+
+	private MigrationExecutor getMigrationExecutorFor(Migration migration) throws MigrationFailedException
+	{
+		for (MigrationExecutor migrationExecutor : this.migrationExecutors)
+		{
+			if (migrationExecutor.handles(migration))
+			{
+				return migrationExecutor;
+			}
+		}
+
+		throw new MigrationFailedException("No migration executor for " + migration.getName() + ".");
 	}
 
 	private void recordMigrationFailed(Migration migration)

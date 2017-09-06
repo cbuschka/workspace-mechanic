@@ -1,9 +1,10 @@
 package com.github.cbuschka.workspace_mechanic.integration_tests;
 
-import com.github.cbuschka.workspace_mechanic.internal.database.Database;
 import com.github.cbuschka.workspace_mechanic.internal.DirectoryMigrationSource;
 import com.github.cbuschka.workspace_mechanic.internal.MechanicConfig;
+import com.github.cbuschka.workspace_mechanic.internal.MigrationExecutor;
 import com.github.cbuschka.workspace_mechanic.internal.MigrationType;
+import com.github.cbuschka.workspace_mechanic.internal.database.Database;
 
 import java.io.File;
 import java.io.FileWriter;

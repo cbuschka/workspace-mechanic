@@ -1,10 +1,13 @@
 package com.github.cbuschka.workspace_mechanic.integration_tests;
 
+import com.github.cbuschka.workspace_mechanic.internal.ExecutableFileMigrationExecutor;
 import com.github.cbuschka.workspace_mechanic.internal.MigrationOutcome;
 import com.github.cbuschka.workspace_mechanic.internal.Migrator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -74,7 +77,7 @@ public class ScriptMigrationIntegrationTest
 
 	private void whenMigrationRuns()
 	{
-		migrationSucceeded = new Migrator(testWorkspace.getDatabase()).migrate(testWorkspace.getConfig());
+		migrationSucceeded = new Migrator(testWorkspace.getDatabase(), Arrays.asList(new ExecutableFileMigrationExecutor())).migrate(testWorkspace.getConfig());
 	}
 
 	@After
