@@ -19,9 +19,13 @@ public class Migrator
 		this.database = database;
 	}
 
-	public boolean migrate(MechanicConfig mechanicConfig)
+	public MigrationOutcome migrate(MechanicConfig mechanicConfig)
 	{
 		List<Migration> pendingMigrations = collectPendingMigrations(mechanicConfig);
+		if (pendingMigrations.isEmpty())
+		{
+			return MigrationOutcome.NOTHING_MIGRATED;
+		}
 
 		for (Migration migration : pendingMigrations)
 		{
@@ -32,11 +36,11 @@ public class Migrator
 			catch (MigrationFailedException ex)
 			{
 				log.error("Migration {} failed. Aborting.", migration.getName(), ex);
-				return false;
+				return MigrationOutcome.MIGRATION_FAILED;
 			}
 		}
 
-		return true;
+		return MigrationOutcome.MIGRATION_SUCCEEDED;
 	}
 
 	private void apply(Migration migration) throws MigrationFailedException

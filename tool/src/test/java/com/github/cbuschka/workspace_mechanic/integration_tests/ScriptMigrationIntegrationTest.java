@@ -1,5 +1,6 @@
 package com.github.cbuschka.workspace_mechanic.integration_tests;
 
+import com.github.cbuschka.workspace_mechanic.internal.MigrationOutcome;
 import com.github.cbuschka.workspace_mechanic.internal.Migrator;
 import org.junit.After;
 import org.junit.Before;
@@ -12,12 +13,20 @@ public class ScriptMigrationIntegrationTest
 {
 	private IntegrationTestWorkspace testWorkspace;
 
-	private boolean migrationSucceeded;
+	private MigrationOutcome migrationSucceeded;
 
 	@Before
 	public void setUp()
 	{
 		testWorkspace = new IntegrationTestWorkspace();
+	}
+
+	@Test
+	public void noMigrations()
+	{
+		whenMigrationRuns();
+
+		assertThat(migrationSucceeded, is(MigrationOutcome.NOTHING_MIGRATED));
 	}
 
 	@Test
@@ -27,7 +36,7 @@ public class ScriptMigrationIntegrationTest
 
 		whenMigrationRuns();
 
-		assertThat(migrationSucceeded, is(true));
+		assertThat(migrationSucceeded, is(MigrationOutcome.MIGRATION_SUCCEEDED));
 		assertThat(testMigration.hasSucceeded(), is(true));
 		assertThat(testWorkspace.getDatabase().hasSucceeded(testMigration.getName()), is(true));
 	}
@@ -40,7 +49,7 @@ public class ScriptMigrationIntegrationTest
 
 		whenMigrationRuns();
 
-		assertThat(migrationSucceeded, is(true));
+		assertThat(migrationSucceeded, is(MigrationOutcome.MIGRATION_SUCCEEDED));
 		assertThat(testMigration1.wasRun(), is(true));
 		assertThat(testMigration2.wasRun(), is(true));
 		assertThat(testWorkspace.getDatabase().isExecuted(testMigration1.getName()), is(true));
@@ -55,7 +64,7 @@ public class ScriptMigrationIntegrationTest
 
 		whenMigrationRuns();
 
-		assertThat(migrationSucceeded, is(false));
+		assertThat(migrationSucceeded, is(MigrationOutcome.MIGRATION_FAILED));
 		assertThat(testMigration1.wasRun(), is(true));
 		assertThat(testMigration1.hasFailed(), is(true));
 		assertThat(testMigration2.wasRun(), is(false));
