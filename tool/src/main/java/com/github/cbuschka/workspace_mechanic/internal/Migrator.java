@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Migrator
@@ -22,11 +24,19 @@ public class Migrator
 
 		for (Migration migration : pendingMigrations)
 		{
-			apply(migration);
+			try
+			{
+				apply(migration);
+			}
+			catch (MigrationFailedException ex)
+			{
+				log.error("Migration {} failed. Aborting.", migration.getName(), ex);
+				return;
+			}
 		}
 	}
 
-	private void apply(Migration migration)
+	private void apply(Migration migration) throws MigrationFailedException
 	{
 		recordMigrationStarted(migration);
 		try
@@ -34,9 +44,10 @@ public class Migrator
 			migration.execute();
 			recordMigrationSucceeded(migration);
 		}
-		catch (Exception ex)
+		catch (MigrationFailedException ex)
 		{
 			recordMigrationFailed(migration);
+			throw ex;
 		}
 	}
 
@@ -68,6 +79,8 @@ public class Migrator
 				}
 			}
 		}
+
+		Collections.sort(migrations, Comparator.comparing(Migration::getName));
 
 		return migrations;
 	}

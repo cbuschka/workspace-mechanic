@@ -28,7 +28,7 @@ public class FileMigration implements Migration
 	}
 
 	@Override
-	public void execute()
+	public void execute() throws MigrationFailedException
 	{
 		try
 		{
@@ -36,7 +36,7 @@ public class FileMigration implements Migration
 			int exitCode = process.waitFor();
 			if (exitCode != 0)
 			{
-				throw new IllegalStateException("Migration failed.");
+				throw new MigrationFailedException(String.format("Migration %s failed with exit code %d.", this.file.getAbsolutePath(), exitCode));
 			}
 		}
 		catch (InterruptedException | IOException ex)

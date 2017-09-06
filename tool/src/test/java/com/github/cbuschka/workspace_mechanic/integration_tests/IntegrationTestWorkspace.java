@@ -44,15 +44,21 @@ public class IntegrationTestWorkspace
 
 	public TestMigration addSucceedingMigration(String name)
 	{
+		return addTestMigration(name, true);
+	}
+
+	private TestMigration addTestMigration(String name, boolean shallSucceed)
+	{
 		try
 		{
-			File successFile = new File(getTestOutputD(), name + ".succeeded");
+			File outputFile = getOutputFile(name, shallSucceed);
 
-			File file = new File(getMigrationsD(), name);
-			FileWriter wr = new FileWriter(file);
-			wr.write("#!/bin/bash\necho 'hello world.'\ntouch " + successFile.getAbsolutePath() + "\nexit 0");
+			File migrationFile = new File(getMigrationsD(), name);
+			FileWriter wr = new FileWriter(migrationFile);
+			String script = String.format("#!/bin/bash\necho '%s'\ntouch %s\nexit %s", name, outputFile.getAbsolutePath(), shallSucceed ? "0" : "1");
+			wr.write(script);
 			wr.close();
-			file.setExecutable(true, true);
+			migrationFile.setExecutable(true, true);
 
 			return new TestMigration(name);
 		}
@@ -60,6 +66,12 @@ public class IntegrationTestWorkspace
 		{
 			throw new UndeclaredThrowableException(ex);
 		}
+	}
+
+	private File getOutputFile(String name, boolean shallSucceed)
+	{
+		String outputFileName = String.format("%s.%s", name, shallSucceed ? "succeeded" : "failed");
+		return new File(getTestOutputD(), outputFileName);
 	}
 
 	public void destroy()
@@ -77,6 +89,11 @@ public class IntegrationTestWorkspace
 		return database;
 	}
 
+	public TestMigration addFailingMigration(String name)
+	{
+		return addTestMigration(name, false);
+	}
+
 	public class TestMigration
 	{
 		private String name;
@@ -86,9 +103,14 @@ public class IntegrationTestWorkspace
 			this.name = name;
 		}
 
+		public String getName()
+		{
+			return name;
+		}
+
 		public boolean hasFailed()
 		{
-			return new File(getTestOutputD(), name + ".failed").isFile();
+			return getOutputFile(this.name, false).isFile();
 		}
 
 		public boolean wasRun()
@@ -98,7 +120,7 @@ public class IntegrationTestWorkspace
 
 		public boolean hasSucceeded()
 		{
-			return new File(getTestOutputD(), name + ".succeeded").isFile();
+			return getOutputFile(this.name, true).isFile();
 		}
 	}
 }

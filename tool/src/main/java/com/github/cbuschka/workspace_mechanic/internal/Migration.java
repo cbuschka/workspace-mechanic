@@ -6,5 +6,5 @@ public interface Migration
 
 	String getName();
 
-	void execute();
+	void execute() throws MigrationFailedException;
 }

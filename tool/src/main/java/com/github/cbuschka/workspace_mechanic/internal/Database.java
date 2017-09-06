@@ -88,10 +88,22 @@ public class Database
 		return entry;
 	}
 
-	public boolean isExecuted(String migrationName)
+	public boolean hasSucceeded(String migrationName)
 	{
 		Entry entry = this.data.migrations.get(migrationName);
-		return entry != null && (entry.status == MigrationStatus.SUCCEEDED || entry.status == MigrationStatus.FAILED);
+		return entry != null && entry.status == MigrationStatus.SUCCEEDED;
+	}
+
+	public boolean hasFailed(String migrationName)
+	{
+
+		Entry entry = this.data.migrations.get(migrationName);
+		return entry != null && entry.status == MigrationStatus.FAILED;
+	}
+
+	public boolean isExecuted(String migrationName)
+	{
+		return hasSucceeded(migrationName) || hasFailed(migrationName);
 	}
 
 	public void flush()

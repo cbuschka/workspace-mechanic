@@ -11,6 +11,9 @@ public class Main
 {
 	public static void main(String[] args)
 	{
-		new Migrator(new Database(new File("/tmp"))).migrate(new MechanicConfig(Collections.emptyList()));
+		File userHome = new File(System.getProperty("user.home"));
+		File mechanicDir = new File(userHome, ".mechanic");
+
+		new Migrator(new Database(mechanicDir)).migrate(new MechanicConfig(Collections.emptyList()));
 	}
 }
