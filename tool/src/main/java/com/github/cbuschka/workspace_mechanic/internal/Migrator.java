@@ -4,6 +4,7 @@ import com.github.cbuschka.workspace_mechanic.internal.database.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,16 +15,18 @@ public class Migrator
 	private static Logger log = LoggerFactory.getLogger(Migrator.class);
 
 	private final Database database;
+	private final MechanicConfig mechanicConfig;
 
 	private final MigrationExecutor migrationExecutor;
 
-	public Migrator(Database database)
+	public Migrator(Database database, MechanicConfig mechanicConfig)
 	{
 		this.database = database;
+		this.mechanicConfig = mechanicConfig;
 		this.migrationExecutor = new MigrationExecutor();
 	}
 
-	public MigrationOutcome migrate(MechanicConfig mechanicConfig)
+	public MigrationOutcome migrate()
 	{
 		List<Migration> pendingMigrations = collectPendingMigrations(mechanicConfig);
 		if (pendingMigrations.isEmpty())
@@ -80,7 +83,7 @@ public class Migrator
 	private List<Migration> collectPendingMigrations(MechanicConfig mechanicConfig)
 	{
 		List<Migration> migrations = new ArrayList<>();
-		for (MigrationSource migrationSource : mechanicConfig.getMigrationSources())
+		for (MigrationSource migrationSource : getMigrationSources(mechanicConfig))
 		{
 			for (Migration migration : migrationSource.getMigrations())
 			{
@@ -94,5 +97,16 @@ public class Migrator
 		Collections.sort(migrations, Comparator.comparing(Migration::getName));
 
 		return migrations;
+	}
+
+	private Iterable<? extends MigrationSource> getMigrationSources(MechanicConfig mechanicConfig)
+	{
+		List<MigrationSource> migrationSources = new ArrayList<>();
+		for (File migrationDir : mechanicConfig.getMigrationDirs())
+		{
+			migrationSources.add(new DirectoryMigrationSource(MigrationType.MIGRATION, migrationDir));
+		}
+
+		return migrationSources;
 	}
 }

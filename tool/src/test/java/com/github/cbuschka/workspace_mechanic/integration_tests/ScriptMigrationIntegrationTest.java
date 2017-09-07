@@ -1,6 +1,5 @@
 package com.github.cbuschka.workspace_mechanic.integration_tests;
 
-import com.github.cbuschka.workspace_mechanic.internal.MigrationExecutor;
 import com.github.cbuschka.workspace_mechanic.internal.MigrationOutcome;
 import com.github.cbuschka.workspace_mechanic.internal.Migrator;
 import org.junit.After;
@@ -75,7 +74,7 @@ public class ScriptMigrationIntegrationTest
 
 	private void whenMigrationRuns()
 	{
-		migrationSucceeded = new Migrator(testWorkspace.getDatabase()).migrate(testWorkspace.getConfig());
+		migrationSucceeded = new Migrator(testWorkspace.getDatabase(), testWorkspace.getConfig()).migrate();
 	}
 
 	@After
