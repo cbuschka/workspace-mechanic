@@ -10,80 +10,23 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class Migrator
+public class MigrationCollector
 {
-	private static Logger log = LoggerFactory.getLogger(Migrator.class);
+	private static Logger log = LoggerFactory.getLogger(MigrationCollector.class);
 
 	private final Database database;
 
-	private final MigrationExecutor migrationExecutor;
 	private final MechanicContext context;
 
-	public Migrator(Database database, MechanicContext context)
+	public MigrationCollector(Database database, MechanicContext context)
 	{
 		this.database = database;
 		this.context = context;
-		this.migrationExecutor = new MigrationExecutor(context);
 	}
 
-	public MigrationOutcome migrate()
-	{
-		List<Migration> pendingMigrations = collectPendingMigrations(context.getConfig());
-		if (pendingMigrations.isEmpty())
-		{
-			return MigrationOutcome.NOTHING_MIGRATED;
-		}
-
-		for (Migration migration : pendingMigrations)
-		{
-			try
-			{
-				execute(migration);
-			}
-			catch (MigrationFailedException ex)
-			{
-				log.error("Migration {} failed. Aborting.", migration.getName(), ex);
-				return MigrationOutcome.MIGRATION_FAILED;
-			}
-		}
-
-		return MigrationOutcome.MIGRATION_SUCCEEDED;
-	}
-
-	public void execute(Migration migration) throws MigrationFailedException
-	{
-		recordMigrationStarted(migration);
-		try
-		{
-			migration.execute(migrationExecutor);
-			recordMigrationSucceeded(migration);
-		}
-		catch (MigrationFailedException ex)
-		{
-			recordMigrationFailed(migration);
-			throw ex;
-		}
-	}
-
-	private void recordMigrationFailed(Migration migration)
-	{
-		this.database.recordMigrationFailed(migration.getName());
-	}
-
-	private void recordMigrationSucceeded(Migration migration)
-	{
-		this.database.recordMigrationSucceeded(migration.getName());
-	}
-
-	private void recordMigrationStarted(Migration migration)
-	{
-		this.database.recordMigrationStarted(migration.getName());
-	}
-
-	private List<Migration> collectPendingMigrations(MechanicConfig mechanicConfig)
-	{
+	public List<Migration> collectPendingMigrations() {
 		List<Migration> migrations = new ArrayList<>();
-		for (MigrationSource migrationSource : getMigrationSources(mechanicConfig))
+		for (MigrationSource migrationSource : getMigrationSources())
 		{
 			for (Migration migration : migrationSource.getMigrations())
 			{
@@ -106,12 +49,12 @@ public class Migrator
 		return migrations;
 	}
 
-	private Iterable<? extends MigrationSource> getMigrationSources(MechanicConfig mechanicConfig)
+	private Iterable<? extends MigrationSource> getMigrationSources()
 	{
 		List<MigrationSource> migrationSources = new ArrayList<>();
-		for (File migrationDir : mechanicConfig.getMigrationDirs())
+		for (File migrationDir : this.context.getConfig().getMigrationDirs())
 		{
-			migrationSources.add(new DirectoryMigrationSource(migrationDir));
+			migrationSources.add(new DirectoryMigrationSource(migrationDir,this.context));
 		}
 
 		return migrationSources;
