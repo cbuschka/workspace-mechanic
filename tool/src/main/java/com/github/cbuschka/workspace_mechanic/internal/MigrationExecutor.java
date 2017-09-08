@@ -17,7 +17,7 @@ public class MigrationExecutor
 		{
 			log.debug("Executing migration {} (exec={}, cwd={})...", migrationName, executable.getPath(), dir.getPath());
 
-			Process process = new ProcessBuilder().directory(dir).command(executable.getAbsolutePath()).inheritIO().start();
+			Process process = new ProcessBuilder().directory(dir).command("bash", "-c", executable.getAbsolutePath()).inheritIO().start();
 			int exitCode = process.waitFor();
 
 			log.debug("Executed migration {} (exec={}, cwd={}) with exitCode={}.", migrationName, executable.getPath(), dir.getPath(), exitCode);
