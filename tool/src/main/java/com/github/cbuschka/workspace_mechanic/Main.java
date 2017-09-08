@@ -1,6 +1,8 @@
 package com.github.cbuschka.workspace_mechanic;
 
 import com.github.cbuschka.workspace_mechanic.internal.MechanicConfig;
+import com.github.cbuschka.workspace_mechanic.internal.MechanicContext;
+import com.github.cbuschka.workspace_mechanic.internal.MechanicContextFactory;
 import com.github.cbuschka.workspace_mechanic.internal.MigrationOutcome;
 import com.github.cbuschka.workspace_mechanic.internal.Migrator;
 import com.github.cbuschka.workspace_mechanic.internal.database.Database;
@@ -18,8 +20,10 @@ public class Main
 		log.debug("Work directory: {}", config.getWorkDir());
 		log.debug("State directory: {}", config.getDbDir());
 
+		MechanicContext context = new MechanicContextFactory().build(config);
+
 		Database database = new Database(config.getDbDir());
-		MigrationOutcome outcome = new Migrator(database, config).migrate();
+		MigrationOutcome outcome = new Migrator(database, context).migrate();
 
 		log.debug("Migration finished with {}.", outcome);
 	}

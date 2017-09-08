@@ -11,14 +11,20 @@ public class MigrationExecutor
 {
 	private static Logger log = LoggerFactory.getLogger(MigrationExecutor.class);
 
+	private MechanicContext context;
+
+	public MigrationExecutor(MechanicContext context)
+	{
+		this.context = context;
+	}
+
 	public void execute(String migrationName, File executable, File dir) throws MigrationFailedException
 	{
 		try
 		{
 			log.debug("Executing migration {} (exec={}, cwd={})...", migrationName, executable.getPath(), dir.getPath());
 
-			Process process = new ProcessBuilder().directory(dir).command("bash", "-c", executable.getAbsolutePath()).inheritIO().start();
-			int exitCode = process.waitFor();
+			int exitCode = execute(executable, dir);
 
 			log.debug("Executed migration {} (exec={}, cwd={}) with exitCode={}.", migrationName, executable.getPath(), dir.getPath(), exitCode);
 
@@ -30,6 +36,20 @@ public class MigrationExecutor
 		catch (InterruptedException | IOException ex)
 		{
 			throw new UndeclaredThrowableException(ex);
+		}
+	}
+
+	private int execute(File executable, File dir) throws IOException, InterruptedException
+	{
+		if (this.context.isBashAvailable())
+		{
+			Process process = new ProcessBuilder().directory(dir).command("bash", "-xc", executable.getAbsolutePath()).inheritIO().start();
+			return process.waitFor();
+		}
+		else
+		{
+			Process process = new ProcessBuilder().directory(dir).command(executable.getAbsolutePath()).inheritIO().start();
+			return process.waitFor();
 		}
 	}
 

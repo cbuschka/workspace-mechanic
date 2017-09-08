@@ -15,20 +15,20 @@ public class Migrator
 	private static Logger log = LoggerFactory.getLogger(Migrator.class);
 
 	private final Database database;
-	private final MechanicConfig mechanicConfig;
 
 	private final MigrationExecutor migrationExecutor;
+	private final MechanicContext context;
 
-	public Migrator(Database database, MechanicConfig mechanicConfig)
+	public Migrator(Database database, MechanicContext context)
 	{
 		this.database = database;
-		this.mechanicConfig = mechanicConfig;
-		this.migrationExecutor = new MigrationExecutor();
+		this.context = context;
+		this.migrationExecutor = new MigrationExecutor(context);
 	}
 
 	public MigrationOutcome migrate()
 	{
-		List<Migration> pendingMigrations = collectPendingMigrations(mechanicConfig);
+		List<Migration> pendingMigrations = collectPendingMigrations(context.getConfig());
 		if (pendingMigrations.isEmpty())
 		{
 			return MigrationOutcome.NOTHING_MIGRATED;

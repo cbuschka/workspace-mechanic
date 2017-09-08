@@ -1,6 +1,8 @@
 package com.github.cbuschka.workspace_mechanic.integration_tests;
 
 import com.github.cbuschka.workspace_mechanic.internal.MechanicConfig;
+import com.github.cbuschka.workspace_mechanic.internal.MechanicContext;
+import com.github.cbuschka.workspace_mechanic.internal.MechanicContextFactory;
 import com.github.cbuschka.workspace_mechanic.internal.database.Database;
 
 import java.io.File;
@@ -11,6 +13,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 public class IntegrationTestWorkspace
 {
 	private final MechanicConfig config;
+	private final MechanicContext context;
 	private Database database;
 	private File baseDir;
 
@@ -20,6 +23,7 @@ public class IntegrationTestWorkspace
 		this.baseDir.mkdirs();
 
 		this.config = MechanicConfig.standard(this.baseDir);
+		this.context = new MechanicContextFactory().build(config);
 
 		getMigrationsD().mkdirs();
 		getTestOutputD().mkdirs();
@@ -118,6 +122,11 @@ public class IntegrationTestWorkspace
 	public TestMigration addFailingMigration(String name)
 	{
 		return addFileTestMigration(name, false);
+	}
+
+	public MechanicContext getContext()
+	{
+		return context;
 	}
 
 	public class TestMigration

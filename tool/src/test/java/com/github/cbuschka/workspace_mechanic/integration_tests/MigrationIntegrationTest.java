@@ -77,12 +77,15 @@ public class MigrationIntegrationTest
 
 	private void whenMigrationRuns()
 	{
-		migrationSucceeded = new Migrator(testWorkspace.getDatabase(), testWorkspace.getConfig()).migrate();
+		migrationSucceeded = new Migrator(testWorkspace.getDatabase(), testWorkspace.getContext()).migrate();
 	}
 
 	@After
 	public void tearDown()
 	{
-		testWorkspace.destroy();
+		if (testWorkspace != null)
+		{
+			testWorkspace.destroy();
+		}
 	}
 }
