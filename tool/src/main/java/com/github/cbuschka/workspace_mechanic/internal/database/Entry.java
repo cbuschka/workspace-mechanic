@@ -5,4 +5,5 @@ public class Entry
 	public String startTime;
 	public String endTime;
 	public MigrationStatus status;
+	public String checksum;
 }

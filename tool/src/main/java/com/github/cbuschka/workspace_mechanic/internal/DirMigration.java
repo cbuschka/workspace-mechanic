@@ -1,6 +1,14 @@
 package com.github.cbuschka.workspace_mechanic.internal;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class DirMigration implements Migration
 {
@@ -24,4 +32,9 @@ public class DirMigration implements Migration
 	{
 		migrationExecutor.execute(getName(), this.executable, this.dir);
 	}
+
+    @Override
+    public BigInteger getChecksum() {
+        return DigestUtils.getChecksum(this.executable);
+    }
 }

@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -40,12 +41,13 @@ public class Database
 		}
 	}
 
-	public void recordMigrationStarted(String migrationName)
+	public void recordMigrationStarted(String migrationName, BigInteger checksum)
 	{
 		Entry entry = getOrCreateEntry(migrationName);
 		entry.status = MigrationStatus.STARTED;
 		entry.startTime = nowAsString();
 		entry.endTime = null;
+		entry.checksum = checksum.toString(16);
 		flush();
 	}
 

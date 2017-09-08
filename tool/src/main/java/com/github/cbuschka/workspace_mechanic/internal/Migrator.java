@@ -79,6 +79,6 @@ public class Migrator
 
 	private void recordMigrationStarted(Migration migration)
 	{
-		this.database.recordMigrationStarted(migration.getName());
+		this.database.recordMigrationStarted(migration.getName(), migration.getChecksum());
 	}
 }
