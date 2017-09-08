@@ -1,42 +1,27 @@
 package com.github.cbuschka.workspace_mechanic.internal;
 
-import java.io.BufferedInputStream;
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class FileMigration implements Migration
 {
-	private MigrationType type;
 	private File file;
 
-	public FileMigration(MigrationType type, File file)
+	public FileMigration(File file)
 	{
-		this.type = type;
 		this.file = file;
 	}
 
 	@Override
 	public String getName()
 	{
-		return this.file.getName();
+		return FilenameUtils.getBaseName(this.file.getName());
 	}
 
 	@Override
-	public MigrationType getType()
+	public void execute(MigrationExecutor migrationExecutor) throws MigrationFailedException
 	{
-		return type;
-	}
-
-	public File getFile()
-	{
-		return file;
-	}
-
-	@Override
-	public InputStream getInputStream() throws IOException
-	{
-		return new BufferedInputStream(new FileInputStream(this.file));
+		migrationExecutor.execute(getName(), this.file, this.file.getParentFile());
 	}
 }

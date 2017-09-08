@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Database
 {
@@ -25,7 +27,7 @@ public class Database
 		{
 			this.baseDir = baseDir;
 			this.baseDir.mkdirs();
-			this.dataFile = new File(this.baseDir, "status.dat");
+			this.dataFile = new File(this.baseDir, "status.json");
 			if (this.dataFile.isFile())
 			{
 				this.data = this.objectMapper.readerFor(Data.class).readValue(this.dataFile);
@@ -41,6 +43,8 @@ public class Database
 	{
 		Entry entry = getOrCreateEntry(migrationName);
 		entry.status = MigrationStatus.STARTED;
+		entry.startTime = nowAsString();
+		entry.endTime = null;
 		flush();
 	}
 
@@ -48,6 +52,7 @@ public class Database
 	{
 		Entry entry = getOrCreateEntry(migrationName);
 		entry.status = MigrationStatus.FAILED;
+		entry.endTime = nowAsString();
 		flush();
 	}
 
@@ -55,6 +60,7 @@ public class Database
 	{
 		Entry entry = getOrCreateEntry(migrationName);
 		entry.status = MigrationStatus.SUCCEEDED;
+		entry.endTime = nowAsString();
 		flush();
 	}
 
@@ -97,5 +103,10 @@ public class Database
 		{
 			throw new UndeclaredThrowableException(ex);
 		}
+	}
+
+	private String nowAsString()
+	{
+		return new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.SSSZZZ").format(new Date());
 	}
 }

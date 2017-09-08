@@ -42,21 +42,49 @@ public class IntegrationTestWorkspace
 
 	public TestMigration addSucceedingMigration(String name)
 	{
-		return addTestMigration(name, true);
+		return addFileTestMigration(name, true);
 	}
 
-	private TestMigration addTestMigration(String name, boolean shallSucceed)
+	public TestMigration addSucceedingDirMigration(String name)
+	{
+		return addDirTestMigration(name, true);
+	}
+
+	private TestMigration addFileTestMigration(String name, boolean shallSucceed)
 	{
 		try
 		{
 			File outputFile = getOutputFile(name, shallSucceed);
-
 			File migrationFile = new File(getMigrationsD(), name);
-			FileWriter wr = new FileWriter(migrationFile);
-			String script = String.format("#!/bin/bash\necho '%s'\ntouch %s\nexit %s", name, outputFile.getAbsolutePath(), shallSucceed ? "0" : "1");
-			wr.write(script);
-			wr.close();
-			migrationFile.setExecutable(true, true);
+			createMigrationScript(name, migrationFile, shallSucceed, outputFile);
+
+			return new TestMigration(name);
+		}
+		catch (IOException ex)
+		{
+			throw new UndeclaredThrowableException(ex);
+		}
+	}
+
+	private void createMigrationScript(String name, File migrationFile, boolean shallSucceed, File outputFile) throws IOException
+	{
+		migrationFile.getParentFile().mkdirs();
+		FileWriter wr = new FileWriter(migrationFile);
+		String script = String.format("#!/bin/bash\necho '%s'\ntouch %s\nexit %s", name, outputFile.getAbsolutePath(), shallSucceed ? "0" : "1");
+		wr.write(script);
+		wr.close();
+		migrationFile.setExecutable(true, true);
+	}
+
+
+	private TestMigration addDirTestMigration(String name, boolean shallSucceed)
+	{
+		try
+		{
+			File outputFile = getOutputFile(name, shallSucceed);
+			File migrationDir = new File(getMigrationsD(), name);
+			File migrationFile = new File(migrationDir, "migrate.sh");
+			createMigrationScript(name, migrationFile, shallSucceed, outputFile);
 
 			return new TestMigration(name);
 		}
@@ -89,7 +117,7 @@ public class IntegrationTestWorkspace
 
 	public TestMigration addFailingMigration(String name)
 	{
-		return addTestMigration(name, false);
+		return addFileTestMigration(name, false);
 	}
 
 	public class TestMigration

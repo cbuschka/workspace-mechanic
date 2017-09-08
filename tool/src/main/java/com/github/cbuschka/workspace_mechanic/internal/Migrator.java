@@ -55,7 +55,7 @@ public class Migrator
 		recordMigrationStarted(migration);
 		try
 		{
-			migrationExecutor.execute(migration);
+			migration.execute(migrationExecutor);
 			recordMigrationSucceeded(migration);
 		}
 		catch (MigrationFailedException ex)
@@ -96,6 +96,8 @@ public class Migrator
 
 		Collections.sort(migrations, Comparator.comparing(Migration::getName));
 
+		log.debug("{} migration(s) found.", migrations.size());
+
 		return migrations;
 	}
 
@@ -104,7 +106,7 @@ public class Migrator
 		List<MigrationSource> migrationSources = new ArrayList<>();
 		for (File migrationDir : mechanicConfig.getMigrationDirs())
 		{
-			migrationSources.add(new DirectoryMigrationSource(MigrationType.MIGRATION, migrationDir));
+			migrationSources.add(new DirectoryMigrationSource(migrationDir));
 		}
 
 		return migrationSources;

@@ -7,12 +7,10 @@ import java.util.List;
 public class DirectoryMigrationSource implements MigrationSource
 {
 	private File baseDir;
-	private MigrationType migrationType;
 
-	public DirectoryMigrationSource(MigrationType migrationType, File baseDir)
+	public DirectoryMigrationSource(File baseDir)
 	{
 		this.baseDir = baseDir;
-		this.migrationType = migrationType;
 	}
 
 	@Override
@@ -28,13 +26,13 @@ public class DirectoryMigrationSource implements MigrationSource
 		{
 			for (File file : baseDir.listFiles())
 			{
-				if (file.isDirectory())
+				if (file.isDirectory() && new File(file, "migrate.sh").exists())
 				{
-					// skipped TODO
+					migrations.add(new DirMigration(file));
 				}
 				else if (file.isFile())
 				{
-					migrations.add(new FileMigration(migrationType, file));
+					migrations.add(new FileMigration(file));
 				}
 			}
 		}

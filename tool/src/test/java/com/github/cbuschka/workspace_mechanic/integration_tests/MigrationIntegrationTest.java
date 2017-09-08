@@ -9,7 +9,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ScriptMigrationIntegrationTest
+public class MigrationIntegrationTest
 {
 	private IntegrationTestWorkspace testWorkspace;
 
@@ -30,7 +30,7 @@ public class ScriptMigrationIntegrationTest
 	}
 
 	@Test
-	public void singleSucceeding()
+	public void singleFileMigrationSucceeding()
 	{
 		IntegrationTestWorkspace.TestMigration testMigration = testWorkspace.addSucceedingMigration("001_first");
 
@@ -46,14 +46,17 @@ public class ScriptMigrationIntegrationTest
 	{
 		IntegrationTestWorkspace.TestMigration testMigration1 = testWorkspace.addSucceedingMigration("001_first");
 		IntegrationTestWorkspace.TestMigration testMigration2 = testWorkspace.addSucceedingMigration("002_second");
+		IntegrationTestWorkspace.TestMigration testMigration3 = testWorkspace.addSucceedingDirMigration("003_third_dir");
 
 		whenMigrationRuns();
 
 		assertThat(migrationSucceeded, is(MigrationOutcome.MIGRATION_SUCCEEDED));
 		assertThat(testMigration1.wasRun(), is(true));
 		assertThat(testMigration2.wasRun(), is(true));
+		assertThat(testMigration3.wasRun(), is(true));
 		assertThat(testWorkspace.getDatabase().isExecuted(testMigration1.getName()), is(true));
 		assertThat(testWorkspace.getDatabase().isExecuted(testMigration2.getName()), is(true));
+		assertThat(testWorkspace.getDatabase().isExecuted(testMigration3.getName()), is(true));
 	}
 
 	@Test
