@@ -89,11 +89,6 @@ public class Database
 		return entry != null && entry.status == MigrationStatus.FAILED;
 	}
 
-	public boolean isExecuted(String migrationName)
-	{
-		return hasSucceeded(migrationName) || hasFailed(migrationName);
-	}
-
 	public void flush()
 	{
 		try

@@ -7,10 +7,10 @@ public class DirMigration implements Migration
 	private File executable;
 	private File dir;
 
-	public DirMigration(File dir)
+	public DirMigration(File dir, File executable)
 	{
 		this.dir = dir;
-		this.executable = new File(dir, "migrate.sh");
+		this.executable = executable;
 	}
 
 	@Override

@@ -23,6 +23,7 @@ public class OsDetector
 
 	private String getLowerOsName()
 	{
-		return osNameSupplier.get().toLowerCase();
+		String osName = osNameSupplier.get().toLowerCase();
+		return osName;
 	}
 }

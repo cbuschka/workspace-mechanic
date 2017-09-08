@@ -10,152 +10,159 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 
-public class IntegrationTestWorkspace
-{
-	private final MechanicConfig config;
-	private final MechanicContext context;
-	private Database database;
-	private File baseDir;
+public class IntegrationTestWorkspace {
+    private final MechanicConfig config;
+    private final MechanicContext context;
+    private Database database;
+    private File baseDir;
 
-	public IntegrationTestWorkspace()
-	{
-		this.baseDir = new File("/tmp", "workspace-mechanic-" + System.currentTimeMillis() + "-itest");
-		this.baseDir.mkdirs();
+    public IntegrationTestWorkspace() {
+        this.baseDir = new File("/tmp", "workspace-mechanic-" + System.currentTimeMillis() + "-itest");
+        this.baseDir.mkdirs();
 
-		this.config = MechanicConfig.standard(this.baseDir);
-		this.context = new MechanicContextFactory().build(config);
+        this.config = MechanicConfig.standard(this.baseDir);
+        this.context = new MechanicContextFactory().build(config);
 
-		getMigrationsD().mkdirs();
-		getTestOutputD().mkdirs();
+        getMigrationsD().mkdirs();
+        getTestOutputD().mkdirs();
 
-		this.config.getDbDir().mkdirs();
-		this.database = new Database(this.config.getDbDir());
+        this.config.getDbDir().mkdirs();
+        this.database = new Database(this.config.getDbDir());
 
-		this.config.getWorkDir().mkdirs();
-	}
+        this.config.getWorkDir().mkdirs();
+    }
 
-	public File getMigrationsD()
-	{
-		return this.config.getMigrationDirs().get(0);
-	}
+    public File getMigrationsD() {
+        return this.config.getMigrationDirs().get(0);
+    }
 
-	public MechanicConfig getConfig()
-	{
-		return this.config;
-	}
+    public MechanicConfig getConfig() {
+        return this.config;
+    }
 
-	public TestMigration addSucceedingMigration(String name)
-	{
-		return addFileTestMigration(name, true);
-	}
+    public TestMigration addSucceedingMigration(String name) {
+        return addFileTestMigration(name, true);
+    }
 
-	public TestMigration addSucceedingDirMigration(String name)
-	{
-		return addDirTestMigration(name, true);
-	}
+    public TestMigration addSucceedingDirMigration(String name) {
+        return addDirTestMigration(name, true);
+    }
 
-	private TestMigration addFileTestMigration(String name, boolean shallSucceed)
-	{
-		try
-		{
-			File outputFile = getOutputFile(name, shallSucceed);
-			File migrationFile = new File(getMigrationsD(), name);
-			createMigrationScript(name, migrationFile, shallSucceed, outputFile);
+    private TestMigration addFileTestMigration(String name, boolean shallSucceed) {
+        try {
+            File outputFile = getOutputFile(name, shallSucceed);
+            File migrationFile = getMigrationFile(name, false);
+            createMigrationScript(name, migrationFile, shallSucceed, outputFile);
 
-			return new TestMigration(name);
-		}
-		catch (IOException ex)
-		{
-			throw new UndeclaredThrowableException(ex);
-		}
-	}
+            return new TestMigration(name);
+        } catch (IOException ex) {
+            throw new UndeclaredThrowableException(ex);
+        }
+    }
 
-	private void createMigrationScript(String name, File migrationFile, boolean shallSucceed, File outputFile) throws IOException
-	{
-		migrationFile.getParentFile().mkdirs();
-		FileWriter wr = new FileWriter(migrationFile);
-		String script = String.format("#!/bin/bash\necho '%s'\ntouch %s\nexit %s", name, outputFile.getAbsolutePath(), shallSucceed ? "0" : "1");
-		wr.write(script);
-		wr.close();
-		migrationFile.setExecutable(true, true);
-	}
+    private File getMigrationFile(String name, boolean dirMigration) {
 
+        File parentDir = getMigrationsD();
+        if (dirMigration) {
+            parentDir = new File(parentDir, name);
+            name = "migrate";
+        }
 
-	private TestMigration addDirTestMigration(String name, boolean shallSucceed)
-	{
-		try
-		{
-			File outputFile = getOutputFile(name, shallSucceed);
-			File migrationDir = new File(getMigrationsD(), name);
-			File migrationFile = new File(migrationDir, "migrate.sh");
-			createMigrationScript(name, migrationFile, shallSucceed, outputFile);
+        if (this.context.isCmdExeAvailable()) {
+            return new File(parentDir, name + ".bat");
+        } else if (this.context.isBashAvailable()) {
+            return new File(parentDir, name + ".sh");
+        } else {
+            throw new IllegalStateException("Neither bash nor cmd.exe available.");
+        }
+    }
 
-			return new TestMigration(name);
-		}
-		catch (IOException ex)
-		{
-			throw new UndeclaredThrowableException(ex);
-		}
-	}
+    private void createMigrationScript(String name, File migrationFile, boolean shallSucceed, File outputFile) throws IOException {
+        migrationFile.getParentFile().mkdirs();
+        if (migrationFile.getName().endsWith(".bat")) {
+            FileWriter wr = new FileWriter(migrationFile);
+            String script = String.format("@ECHO ON\r\nECHO \"%s\"\r\nTYPE nul > \"%s\"\r\nEXIT %s", name, outputFile.getAbsolutePath(), shallSucceed ? "0" : "1");
+            wr.write(script);
+            wr.close();
+            migrationFile.setExecutable(true, true);
 
-	private File getOutputFile(String name, boolean shallSucceed)
-	{
-		String outputFileName = String.format("%s.%s", name, shallSucceed ? "succeeded" : "failed");
-		return new File(getTestOutputD(), outputFileName);
-	}
+        } else if (migrationFile.getName().endsWith(".sh")) {
+            FileWriter wr = new FileWriter(migrationFile);
+            String script = String.format("#!/bin/bash\necho '%s'\ntouch %s\nexit %s", name, fixBashPath(outputFile.getAbsolutePath()), shallSucceed ? "0" : "1");
+            wr.write(script);
+            wr.close();
+            migrationFile.setExecutable(true, true);
+        } else {
+            throw new IllegalStateException("Migration script name neither .sh nor .bat.");
+        }
+    }
 
-	public void destroy()
-	{
+    private String fixBashPath(String path) {
+        if (context.isWindows()) {
+            return path.replace("\\", "\\\\");
+        }
 
-	}
+        return path;
+    }
 
-	public File getTestOutputD()
-	{
-		return new File(baseDir, "test-output");
-	}
+    private TestMigration addDirTestMigration(String name, boolean shallSucceed) {
+        try {
+            File outputFile = getOutputFile(name, shallSucceed);
+            File migrationFile = getMigrationFile(name, true);
+            createMigrationScript(name, migrationFile, shallSucceed, outputFile);
 
-	public Database getDatabase()
-	{
-		return database;
-	}
+            return new TestMigration(name);
+        } catch (IOException ex) {
+            throw new UndeclaredThrowableException(ex);
+        }
+    }
 
-	public TestMigration addFailingMigration(String name)
-	{
-		return addFileTestMigration(name, false);
-	}
+    private File getOutputFile(String name, boolean shallSucceed) {
+        String outputFileName = String.format("%s.%s", name, shallSucceed ? "succeeded" : "failed");
+        return new File(getTestOutputD(), outputFileName);
+    }
 
-	public MechanicContext getContext()
-	{
-		return context;
-	}
+    public void destroy() {
 
-	public class TestMigration
-	{
-		private String name;
+    }
 
-		public TestMigration(String name)
-		{
-			this.name = name;
-		}
+    public File getTestOutputD() {
+        return new File(baseDir, "test-output");
+    }
 
-		public String getName()
-		{
-			return name;
-		}
+    public Database getDatabase() {
+        return database;
+    }
 
-		public boolean hasFailed()
-		{
-			return getOutputFile(this.name, false).isFile();
-		}
+    public TestMigration addFailingMigration(String name) {
+        return addFileTestMigration(name, false);
+    }
 
-		public boolean wasRun()
-		{
-			return hasFailed() || hasSucceeded();
-		}
+    public MechanicContext getContext() {
+        return context;
+    }
 
-		public boolean hasSucceeded()
-		{
-			return getOutputFile(this.name, true).isFile();
-		}
-	}
+    public class TestMigration {
+        private String name;
+
+        public TestMigration(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean hasFailed() {
+            return getOutputFile(this.name, false).isFile();
+        }
+
+        public boolean wasRun() {
+            return hasFailed() || hasSucceeded();
+        }
+
+        public boolean hasSucceeded() {
+            return getOutputFile(this.name, true).isFile();
+        }
+    }
 }

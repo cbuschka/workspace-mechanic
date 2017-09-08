@@ -18,9 +18,11 @@ public class Migrator
 
 	private final MigrationExecutor migrationExecutor;
 	private final MechanicContext context;
+	private final MigrationCollector migrationCollector;
 
-	public Migrator(Database database, MechanicContext context)
+	public Migrator(MigrationCollector migrationCollector, Database database, MechanicContext context)
 	{
+		this.migrationCollector = migrationCollector;
 		this.database = database;
 		this.context = context;
 		this.migrationExecutor = new MigrationExecutor(context);
@@ -28,7 +30,7 @@ public class Migrator
 
 	public MigrationOutcome migrate()
 	{
-		List<Migration> pendingMigrations = collectPendingMigrations(context.getConfig());
+		List<Migration> pendingMigrations = this.migrationCollector.collectPendingMigrations();
 		if (pendingMigrations.isEmpty())
 		{
 			return MigrationOutcome.NOTHING_MIGRATED;
@@ -78,42 +80,5 @@ public class Migrator
 	private void recordMigrationStarted(Migration migration)
 	{
 		this.database.recordMigrationStarted(migration.getName());
-	}
-
-	private List<Migration> collectPendingMigrations(MechanicConfig mechanicConfig)
-	{
-		List<Migration> migrations = new ArrayList<>();
-		for (MigrationSource migrationSource : getMigrationSources(mechanicConfig))
-		{
-			for (Migration migration : migrationSource.getMigrations())
-			{
-				boolean alreadyApplied = database.isExecuted(migration.getName());
-				if (!alreadyApplied)
-				{
-					migrations.add(migration);
-				}
-				else
-				{
-					log.debug("Migration {} already applied.", migration.getName());
-				}
-			}
-		}
-
-		Collections.sort(migrations, Comparator.comparing(Migration::getName));
-
-		log.debug("{} migration(s) found.", migrations.size());
-
-		return migrations;
-	}
-
-	private Iterable<? extends MigrationSource> getMigrationSources(MechanicConfig mechanicConfig)
-	{
-		List<MigrationSource> migrationSources = new ArrayList<>();
-		for (File migrationDir : mechanicConfig.getMigrationDirs())
-		{
-			migrationSources.add(new DirectoryMigrationSource(migrationDir));
-		}
-
-		return migrationSources;
 	}
 }
