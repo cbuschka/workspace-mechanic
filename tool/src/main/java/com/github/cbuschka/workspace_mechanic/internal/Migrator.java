@@ -87,9 +87,14 @@ public class Migrator
 		{
 			for (Migration migration : migrationSource.getMigrations())
 			{
-				if (!database.isExecuted(migration.getName()))
+				boolean alreadyApplied = database.isExecuted(migration.getName());
+				if (!alreadyApplied)
 				{
 					migrations.add(migration);
+				}
+				else
+				{
+					log.debug("Migration {} already applied.", migration.getName());
 				}
 			}
 		}

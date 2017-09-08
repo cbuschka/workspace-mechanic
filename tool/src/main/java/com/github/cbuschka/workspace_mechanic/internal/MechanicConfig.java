@@ -1,5 +1,7 @@
 package com.github.cbuschka.workspace_mechanic.internal;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,21 +17,21 @@ public class MechanicConfig
 
 	public static MechanicConfig defaults()
 	{
-		File cwd = new File(System.getProperty("user.dir"), ".");
+		File cwd = new File(System.getProperty("user.dir"), "");
 		return standard(cwd);
 	}
 
 	public static MechanicConfig standard(File cwd)
 	{
 		File baseDir = cwd;
-		File dotMechanicDir = new File(cwd, ".mechanic");
+		File dotMechanicDir = FileUtils.getFile(cwd, ".mechanic");
 		if (dotMechanicDir.isDirectory())
 		{
 			baseDir = dotMechanicDir;
 		}
-		File migrationsDir = new File(baseDir, "migrations.d");
-		File workDir = new File(baseDir, "work");
-		File dbDir = new File(baseDir, "db");
+		File migrationsDir = FileUtils.getFile(baseDir, "migrations.d");
+		File workDir = FileUtils.getFile(baseDir, "work");
+		File dbDir = FileUtils.getFile(baseDir, "db");
 		return new MechanicConfig(Arrays.asList(migrationsDir), workDir, dbDir);
 	}
 

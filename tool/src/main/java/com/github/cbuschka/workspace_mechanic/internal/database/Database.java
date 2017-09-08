@@ -2,6 +2,7 @@ package com.github.cbuschka.workspace_mechanic.internal.database;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +13,7 @@ import java.util.Date;
 public class Database
 {
 	private File dataFile;
-	private File baseDir;
+	private File dbDir;
 	private Data data = new Data();
 
 	private ObjectMapper objectMapper = new ObjectMapper();
@@ -21,13 +22,13 @@ public class Database
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 	}
 
-	public Database(File baseDir)
+	public Database(File dbDir)
 	{
 		try
 		{
-			this.baseDir = baseDir;
-			this.baseDir.mkdirs();
-			this.dataFile = new File(this.baseDir, "status.json");
+			this.dbDir = dbDir;
+			this.dbDir.mkdirs();
+			this.dataFile = FileUtils.getFile(this.dbDir, "state.json");
 			if (this.dataFile.isFile())
 			{
 				this.data = this.objectMapper.readerFor(Data.class).readValue(this.dataFile);

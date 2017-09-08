@@ -14,6 +14,9 @@ public class Main
 	public static void main(String[] args)
 	{
 		MechanicConfig config = MechanicConfig.defaults();
+		log.debug("Migration directories: {}", config.getMigrationDirs());
+		log.debug("Work directory: {}", config.getWorkDir());
+		log.debug("State directory: {}", config.getDbDir());
 
 		Database database = new Database(config.getDbDir());
 		MigrationOutcome outcome = new Migrator(database, config).migrate();
