@@ -30,7 +30,7 @@ public class MigrationCollector
 		{
 			for (Migration migration : migrationSource.getMigrations())
 			{
-				boolean alreadyApplied = database.isExecuted(migration.getName());
+				boolean alreadyApplied = database.hasSucceeded(migration.getName());
 				if (!alreadyApplied)
 				{
 					migrations.add(migration);
