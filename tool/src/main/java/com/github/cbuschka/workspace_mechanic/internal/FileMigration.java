@@ -18,12 +18,12 @@ public class FileMigration implements Migration {
     }
 
     @Override
-    public void execute(MigrationExecutor migrationExecutor) throws MigrationFailedException {
-        migrationExecutor.execute(getName(), this.file, this.file.getParentFile());
-    }
-
-    @Override
     public BigInteger getChecksum() {
         return DigestUtils.getChecksum(this.file);
     }
+
+	public File getFile()
+	{
+		return file;
+	}
 }

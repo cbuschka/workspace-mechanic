@@ -6,7 +6,5 @@ public interface Migration
 {
 	String getName();
 
-	void execute(MigrationExecutor migrationExecutor) throws MigrationFailedException;
-
 	BigInteger getChecksum();
 }

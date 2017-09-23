@@ -57,7 +57,7 @@ public class Migrator
 		recordMigrationStarted(migration);
 		try
 		{
-			migration.execute(migrationExecutor);
+			migrationExecutor.execute(migration);
 			recordMigrationSucceeded(migration);
 		}
 		catch (MigrationFailedException ex)

@@ -27,10 +27,14 @@ public class DirMigration implements Migration
 		return this.dir.getName();
 	}
 
-	@Override
-	public void execute(MigrationExecutor migrationExecutor) throws MigrationFailedException
+	public File getExecutable()
 	{
-		migrationExecutor.execute(getName(), this.executable, this.dir);
+		return executable;
+	}
+
+	public File getDir()
+	{
+		return dir;
 	}
 
     @Override
