@@ -4,6 +4,8 @@ import com.github.cbuschka.workspace_mechanic.internal.MechanicContext;
 
 public class PythonScriptGenerator implements ScriptGenerator
 {
+	public static final PythonScriptGenerator INSTANCE = new PythonScriptGenerator();
+
 	@Override
 	public String getExt()
 	{
