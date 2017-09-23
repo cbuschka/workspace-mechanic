@@ -4,6 +4,8 @@ import com.github.cbuschka.workspace_mechanic.internal.MechanicContext;
 
 public class BashScriptGenerator implements ScriptGenerator
 {
+	public static final BashScriptGenerator INSTANCE = new BashScriptGenerator();
+
 	@Override
 	public String generate(String migrationName, String touchFilePath, boolean shallSucceed, MechanicContext context)
 	{
@@ -12,9 +14,17 @@ public class BashScriptGenerator implements ScriptGenerator
 		return script;
 	}
 
+	@Override
+	public String getExt()
+	{
+		return "sh";
+	}
 
-	private String fixBashPath(String path, MechanicContext context) {
-		if (context.isWindows()) {
+
+	private String fixBashPath(String path, MechanicContext context)
+	{
+		if (context.isWindows())
+		{
 			return path.replace("\\", "\\\\");
 		}
 

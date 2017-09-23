@@ -29,7 +29,7 @@ public class MigrationIntegrationTest {
 
     @Test
     public void singleFileMigrationSucceeding() {
-        IntegrationTestWorkspace.TestMigration testMigration = testWorkspace.addSucceedingMigration("001_first");
+        IntegrationTestWorkspace.TestMigration testMigration = testWorkspace.addSucceedingMigration("001_first", BashScriptGenerator.INSTANCE);
 
         whenMigrationRuns();
 
@@ -40,9 +40,9 @@ public class MigrationIntegrationTest {
 
     @Test
     public void allSucceeding() {
-        IntegrationTestWorkspace.TestMigration testMigration1 = testWorkspace.addSucceedingMigration("001_first");
-        IntegrationTestWorkspace.TestMigration testMigration2 = testWorkspace.addSucceedingMigration("002_second");
-        IntegrationTestWorkspace.TestMigration testMigration3 = testWorkspace.addSucceedingDirMigration("003_third_dir");
+        IntegrationTestWorkspace.TestMigration testMigration1 = testWorkspace.addSucceedingMigration("001_first", BashScriptGenerator.INSTANCE);
+        IntegrationTestWorkspace.TestMigration testMigration2 = testWorkspace.addSucceedingMigration("002_second", BashScriptGenerator.INSTANCE);
+        IntegrationTestWorkspace.TestMigration testMigration3 = testWorkspace.addSucceedingDirMigration("003_third_dir", BashScriptGenerator.INSTANCE);
 
         whenMigrationRuns();
 
@@ -57,8 +57,8 @@ public class MigrationIntegrationTest {
 
     @Test
     public void firstFails() {
-        IntegrationTestWorkspace.TestMigration testMigration1 = testWorkspace.addFailingMigration("001_first");
-        IntegrationTestWorkspace.TestMigration testMigration2 = testWorkspace.addSucceedingMigration("002_second");
+        IntegrationTestWorkspace.TestMigration testMigration1 = testWorkspace.addFailingMigration("001_first", BashScriptGenerator.INSTANCE);
+        IntegrationTestWorkspace.TestMigration testMigration2 = testWorkspace.addSucceedingMigration("002_second", BashScriptGenerator.INSTANCE);
 
         whenMigrationRuns();
 

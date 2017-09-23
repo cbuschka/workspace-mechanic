@@ -2,20 +2,23 @@ package com.github.cbuschka.workspace_mechanic.integration_tests;
 
 import com.github.cbuschka.workspace_mechanic.internal.MechanicContext;
 
-public class BatScriptGenerator implements ScriptGenerator
+public class PythonScriptGenerator implements ScriptGenerator
 {
-	public static final BatScriptGenerator INSTANCE = new BatScriptGenerator();
-
 	@Override
 	public String getExt()
 	{
-		return "bat";
+		return "py";
 	}
 
 	@Override
 	public String generate(String migrationName, String touchFilePath, boolean shallSucceed, MechanicContext context)
 	{
-		String script = String.format("@ECHO ON\r\nECHO \"%s\"\r\nTYPE nul > \"%s\"\r\nEXIT %s", migrationName, touchFilePath, shallSucceed ? "0" : "1");
+		String script = String.format("from sys import exit\n" +
+				" \n" +
+				"print '%s'\n" +
+				"open('%s', 'a').close()\n" +
+				"\n" +
+				"exit(%s)", migrationName, touchFilePath, shallSucceed ? "0" : "1");
 
 		return script;
 	}

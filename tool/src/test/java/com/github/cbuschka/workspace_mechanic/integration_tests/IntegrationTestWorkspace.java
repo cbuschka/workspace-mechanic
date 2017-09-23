@@ -44,23 +44,23 @@ public class IntegrationTestWorkspace
 		return this.config;
 	}
 
-	public TestMigration addSucceedingMigration(String name)
+	public TestMigration addSucceedingMigration(String name, ScriptGenerator scriptGenerator)
 	{
-		return addFileTestMigration(name, true);
+		return addFileTestMigration(name, true, scriptGenerator);
 	}
 
-	public TestMigration addSucceedingDirMigration(String name)
+	public TestMigration addSucceedingDirMigration(String name, ScriptGenerator scriptGenerator)
 	{
-		return addDirTestMigration(name, true);
+		return addDirTestMigration(name, true, scriptGenerator);
 	}
 
-	private TestMigration addFileTestMigration(String name, boolean shallSucceed)
+	private TestMigration addFileTestMigration(String name, boolean shallSucceed, ScriptGenerator scriptGenerator)
 	{
 		try
 		{
 			File outputFile = getOutputFile(name, shallSucceed);
-			File migrationFile = getMigrationFile(name, false);
-			createMigrationScript(name, migrationFile, shallSucceed, outputFile);
+			File migrationFile = getMigrationFile(name, scriptGenerator.getExt(), false);
+			createMigrationScript(name, migrationFile, shallSucceed, outputFile, scriptGenerator);
 
 			return new TestMigration(name);
 		}
@@ -70,62 +70,38 @@ public class IntegrationTestWorkspace
 		}
 	}
 
-	private File getMigrationFile(String name, boolean dirMigration)
+	private File getMigrationFile(String name, String ext, boolean dirMigration)
 	{
 		File parentDir = getMigrationsD();
 		if (dirMigration)
 		{
 			parentDir = new File(parentDir, name);
-			name = "migrate";
-		}
-
-		if (this.context.isCmdExeAvailable())
-		{
-			return new File(parentDir, name + ".bat");
-		}
-		else if (this.context.isBashAvailable())
-		{
-			return new File(parentDir, name + ".sh");
+			return new File(parentDir, "migrate." + ext);
 		}
 		else
 		{
-			throw new IllegalStateException("Neither bash nor cmd.exe available.");
+			return new File(parentDir, name + "." + ext);
 		}
 	}
 
-	private void createMigrationScript(String name, File migrationFile, boolean shallSucceed, File outputFile) throws IOException
+	private void createMigrationScript(String name, File migrationFile, boolean shallSucceed, File outputFile, ScriptGenerator scriptGenerator) throws IOException
 	{
 		migrationFile.getParentFile().mkdirs();
-		if (migrationFile.getName().endsWith(".bat"))
-		{
-			FileWriter wr = new FileWriter(migrationFile);
-			String script = new BatScriptGenerator().generate(name, outputFile.getAbsolutePath(), shallSucceed, context);
-			wr.write(script);
-			wr.close();
-			migrationFile.setExecutable(true, true);
 
-		}
-		else if (migrationFile.getName().endsWith(".sh"))
-		{
-			FileWriter wr = new FileWriter(migrationFile);
-			String script = new BashScriptGenerator().generate(name, outputFile.getAbsolutePath(), shallSucceed, context);
-			wr.write(script);
-			wr.close();
-			migrationFile.setExecutable(true, true);
-		}
-		else
-		{
-			throw new IllegalStateException("Migration script name neither .sh nor .bat.");
-		}
+		FileWriter wr = new FileWriter(migrationFile);
+		String script = scriptGenerator.generate(name, outputFile.getAbsolutePath(), shallSucceed, context);
+		wr.write(script);
+		wr.close();
+		migrationFile.setExecutable(true, true);
 	}
 
-	private TestMigration addDirTestMigration(String name, boolean shallSucceed)
+	private TestMigration addDirTestMigration(String name, boolean shallSucceed, ScriptGenerator scriptGenerator)
 	{
 		try
 		{
 			File outputFile = getOutputFile(name, shallSucceed);
-			File migrationFile = getMigrationFile(name, true);
-			createMigrationScript(name, migrationFile, shallSucceed, outputFile);
+			File migrationFile = getMigrationFile(name, scriptGenerator.getExt(), true);
+			createMigrationScript(name, migrationFile, shallSucceed, outputFile, scriptGenerator);
 
 			return new TestMigration(name);
 		}
@@ -156,9 +132,9 @@ public class IntegrationTestWorkspace
 		return database;
 	}
 
-	public TestMigration addFailingMigration(String name)
+	public TestMigration addFailingMigration(String name, ScriptGenerator scriptGenerator)
 	{
-		return addFileTestMigration(name, false);
+		return addFileTestMigration(name, false, scriptGenerator);
 	}
 
 	public MechanicContext getContext()
