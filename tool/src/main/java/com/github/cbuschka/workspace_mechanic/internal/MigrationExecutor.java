@@ -12,6 +12,7 @@ public class MigrationExecutor
 {
 
 	private List<Class<? extends MigrationExecutionStrategy>> strategies = Arrays.asList(
+			JythonMigrationExecutionStrategy.class,
 			ExecutableMigrationExecutionStrategy.class
 	);
 
