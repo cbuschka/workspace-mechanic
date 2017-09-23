@@ -42,7 +42,6 @@ public class MigrationIntegrationTest
 		assertThat(testWorkspace.getDatabase().hasSucceeded(testMigration.getName()), is(true));
 	}
 
-
 	@Test
 	public void singlePythonFileMigrationSucceeding()
 	{
@@ -59,6 +58,30 @@ public class MigrationIntegrationTest
 	public void singlePythonFileMigrationFailing()
 	{
 		IntegrationTestWorkspace.TestMigration testMigration = testWorkspace.addFailingMigration("001_first", PythonScriptGenerator.INSTANCE);
+
+		whenMigrationRuns();
+
+		assertThat(migrationSucceeded, is(MigrationOutcome.MIGRATION_FAILED));
+		assertThat(testMigration.hasSucceeded(), is(false));
+		assertThat(testWorkspace.getDatabase().hasSucceeded(testMigration.getName()), is(false));
+	}
+
+	@Test
+	public void singleJavaFileMigrationSucceeding()
+	{
+		IntegrationTestWorkspace.TestMigration testMigration = testWorkspace.addSucceedingMigration("m001_first", JavaScriptGenerator.INSTANCE);
+
+		whenMigrationRuns();
+
+		assertThat(migrationSucceeded, is(MigrationOutcome.MIGRATION_SUCCEEDED));
+		assertThat(testMigration.hasSucceeded(), is(true));
+		assertThat(testWorkspace.getDatabase().hasSucceeded(testMigration.getName()), is(true));
+	}
+
+	@Test
+	public void singleJavaFileMigrationFailing()
+	{
+		IntegrationTestWorkspace.TestMigration testMigration = testWorkspace.addFailingMigration("m001_first", JavaScriptGenerator.INSTANCE);
 
 		whenMigrationRuns();
 
