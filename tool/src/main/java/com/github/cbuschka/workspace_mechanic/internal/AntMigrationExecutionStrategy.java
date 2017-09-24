@@ -19,30 +19,14 @@ public class AntMigrationExecutionStrategy implements MigrationExecutionStrategy
 	@Override
 	public boolean handles(Migration migration)
 	{
-		File f = getFileFrom(migration);
+		File f = migration.getExecutable();
 		return f != null && f.getName().endsWith(".ant.xml");
-	}
-
-	private File getFileFrom(Migration migration)
-	{
-		if (migration instanceof FileMigration)
-		{
-			FileMigration fileMigration = (FileMigration) migration;
-			return fileMigration.getFile();
-		}
-		else if (migration instanceof DirMigration)
-		{
-			DirMigration fileMigration = (DirMigration) migration;
-			return fileMigration.getExecutable();
-		}
-
-		return null;
 	}
 
 	@Override
 	public void execute(Migration migration) throws MigrationFailedException
 	{
-		File antFile = getFileFrom(migration);
+		File antFile = migration.getExecutable();
 
 		String[] args = new String[]{"-f", antFile.getAbsolutePath()};
 		org.apache.tools.ant.Main.start(args, null, Thread.currentThread().getContextClassLoader());

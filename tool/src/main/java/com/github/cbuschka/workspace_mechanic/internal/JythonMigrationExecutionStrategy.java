@@ -25,30 +25,14 @@ public class JythonMigrationExecutionStrategy implements MigrationExecutionStrat
 	@Override
 	public boolean handles(Migration migration)
 	{
-		File f = getFileFrom(migration);
+		File f = migration.getExecutable();
 		return f != null && f.getName().endsWith(".py");
-	}
-
-	private File getFileFrom(Migration migration)
-	{
-		if (migration instanceof FileMigration)
-		{
-			FileMigration fileMigration = (FileMigration) migration;
-			return fileMigration.getFile();
-		}
-		else if (migration instanceof DirMigration)
-		{
-			DirMigration fileMigration = (DirMigration) migration;
-			return fileMigration.getExecutable();
-		}
-
-		return null;
 	}
 
 	@Override
 	public void execute(Migration migration) throws MigrationFailedException
 	{
-		File pyFile = getFileFrom(migration);
+		File pyFile = migration.getExecutable();
 
 		System.setProperty("python.import.site", "false");
 		org.python.util.PythonInterpreter interp = new org.python.util.PythonInterpreter();

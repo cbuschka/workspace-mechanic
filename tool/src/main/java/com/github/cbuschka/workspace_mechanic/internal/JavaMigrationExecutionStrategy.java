@@ -29,30 +29,14 @@ public class JavaMigrationExecutionStrategy implements MigrationExecutionStrateg
 	@Override
 	public boolean handles(Migration migration)
 	{
-		File f = getFileFrom(migration);
+		File f = migration.getExecutable();
 		return f != null && f.getName().endsWith(".java");
-	}
-
-	private File getFileFrom(Migration migration)
-	{
-		if (migration instanceof FileMigration)
-		{
-			FileMigration fileMigration = (FileMigration) migration;
-			return fileMigration.getFile();
-		}
-		else if (migration instanceof DirMigration)
-		{
-			DirMigration fileMigration = (DirMigration) migration;
-			return fileMigration.getExecutable();
-		}
-
-		return null;
 	}
 
 	@Override
 	public void execute(Migration migration) throws MigrationFailedException
 	{
-		File javaFile = getFileFrom(migration);
+		File javaFile = migration.getExecutable();
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
 

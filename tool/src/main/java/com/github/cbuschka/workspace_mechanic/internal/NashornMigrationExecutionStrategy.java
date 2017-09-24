@@ -31,12 +31,7 @@ public class NashornMigrationExecutionStrategy implements MigrationExecutionStra
 
 	private File getFileFrom(Migration migration)
 	{
-		if (migration instanceof FileMigration)
-		{
-			FileMigration fileMigration = (FileMigration) migration;
-			return fileMigration.getFile();
-		}
-		else if (migration instanceof DirMigration)
+		if (migration instanceof DirMigration)
 		{
 			DirMigration fileMigration = (DirMigration) migration;
 			return fileMigration.getExecutable();

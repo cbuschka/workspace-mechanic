@@ -31,7 +31,7 @@ public class DirectoryMigrationSource implements MigrationSource {
                     File executable = getExecutable(file);
                     migrations.add(new DirMigration(file, executable));
                 } else if (file.isFile()) {
-                    migrations.add(new FileMigration(file));
+                    migrations.add(new DirMigration(file.getParentFile(), file));
                 } else {
                     throw new IllegalStateException("Unknown migration format, neither file nor folder: " + file.getAbsolutePath());
                 }

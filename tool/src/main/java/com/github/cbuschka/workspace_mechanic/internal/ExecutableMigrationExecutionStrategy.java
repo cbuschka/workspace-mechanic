@@ -21,26 +21,14 @@ public class ExecutableMigrationExecutionStrategy implements MigrationExecutionS
 	@Override
 	public boolean handles(Migration migration)
 	{
-		return (migration instanceof FileMigration) || (migration instanceof DirMigration);
+		File executable = migration.getExecutable();
+		return executable.isFile() && executable.canExecute();
 	}
 
 	@Override
 	public void execute(Migration migration) throws MigrationFailedException
 	{
-		if (migration instanceof FileMigration)
-		{
-			FileMigration fileMigration = (FileMigration) migration;
-			execute(fileMigration.getName(), fileMigration.getFile(), fileMigration.getFile().getParentFile());
-		}
-		else if (migration instanceof DirMigration)
-		{
-			DirMigration fileMigration = (DirMigration) migration;
-			execute(fileMigration.getName(), fileMigration.getExecutable(), fileMigration.getDir());
-		}
-		else
-		{
-			throw new IllegalArgumentException();
-		}
+		execute(migration.getName(), migration.getExecutable(), migration.getExecutable().getParentFile());
 	}
 
 	private void execute(String migrationName, File executable, File dir) throws MigrationFailedException
