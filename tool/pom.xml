@@ -44,6 +44,7 @@
                     <minimizeJar>true</minimizeJar>
                     <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
                     <finalName>mechanic-all</finalName>
+                    <minimizeJar>false</minimizeJar>
                 </configuration>
                 <executions>
                     <execution>
@@ -107,6 +108,10 @@
         <dependency>
             <groupId>bsh</groupId>
             <artifactId>bsh</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
         </dependency>
     </dependencies>
 </project>

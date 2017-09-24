@@ -16,6 +16,7 @@ public class MigrationExecutor
 			JavaMigrationExecutionStrategy.class,
 			BshMigrationExecutionStrategy.class,
 			NashornMigrationExecutionStrategy.class,
+			AntMigrationExecutionStrategy.class,
 			ExecutableMigrationExecutionStrategy.class
 	);
 
