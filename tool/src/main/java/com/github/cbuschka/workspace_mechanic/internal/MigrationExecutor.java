@@ -15,6 +15,7 @@ public class MigrationExecutor
 			JythonMigrationExecutionStrategy.class,
 			JavaMigrationExecutionStrategy.class,
 			BshMigrationExecutionStrategy.class,
+			NashornMigrationExecutionStrategy.class,
 			ExecutableMigrationExecutionStrategy.class
 	);
 

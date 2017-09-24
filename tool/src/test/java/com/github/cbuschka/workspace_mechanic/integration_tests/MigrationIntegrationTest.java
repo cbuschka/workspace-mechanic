@@ -114,6 +114,31 @@ public class MigrationIntegrationTest
 		assertThat(testWorkspace.getDatabase().hasSucceeded(testMigration.getName()), is(false));
 	}
 
+
+	@Test
+	public void singleNashornFileMigrationSucceeding()
+	{
+		IntegrationTestWorkspace.TestMigration testMigration = testWorkspace.addSucceedingMigration("001_first", NashornScriptGenerator.INSTANCE);
+
+		whenMigrationRuns();
+
+		assertThat(migrationSucceeded, is(MigrationOutcome.MIGRATION_SUCCEEDED));
+		assertThat(testMigration.hasSucceeded(), is(true));
+		assertThat(testWorkspace.getDatabase().hasSucceeded(testMigration.getName()), is(true));
+	}
+
+	@Test
+	public void singleNashornFileMigrationFailing()
+	{
+		IntegrationTestWorkspace.TestMigration testMigration = testWorkspace.addFailingMigration("001_first", NashornScriptGenerator.INSTANCE);
+
+		whenMigrationRuns();
+
+		assertThat(migrationSucceeded, is(MigrationOutcome.MIGRATION_FAILED));
+		assertThat(testMigration.hasSucceeded(), is(false));
+		assertThat(testWorkspace.getDatabase().hasSucceeded(testMigration.getName()), is(false));
+	}
+
 	@Test
 	public void allSucceeding()
 	{
