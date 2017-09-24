@@ -91,6 +91,30 @@ public class MigrationIntegrationTest
 	}
 
 	@Test
+	public void singleBshFileMigrationSucceeding()
+	{
+		IntegrationTestWorkspace.TestMigration testMigration = testWorkspace.addSucceedingMigration("001_first", BshScriptGenerator.INSTANCE);
+
+		whenMigrationRuns();
+
+		assertThat(migrationSucceeded, is(MigrationOutcome.MIGRATION_SUCCEEDED));
+		assertThat(testMigration.hasSucceeded(), is(true));
+		assertThat(testWorkspace.getDatabase().hasSucceeded(testMigration.getName()), is(true));
+	}
+
+	@Test
+	public void singleBshFileMigrationFailing()
+	{
+		IntegrationTestWorkspace.TestMigration testMigration = testWorkspace.addFailingMigration("001_first", BshScriptGenerator.INSTANCE);
+
+		whenMigrationRuns();
+
+		assertThat(migrationSucceeded, is(MigrationOutcome.MIGRATION_FAILED));
+		assertThat(testMigration.hasSucceeded(), is(false));
+		assertThat(testWorkspace.getDatabase().hasSucceeded(testMigration.getName()), is(false));
+	}
+
+	@Test
 	public void allSucceeding()
 	{
 		IntegrationTestWorkspace.TestMigration testMigration1 = testWorkspace.addSucceedingMigration("001_first", BashScriptGenerator.INSTANCE);

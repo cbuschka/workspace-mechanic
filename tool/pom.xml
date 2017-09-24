@@ -104,5 +104,9 @@
             <groupId>org.python</groupId>
             <artifactId>jython</artifactId>
         </dependency>
+        <dependency>
+            <groupId>bsh</groupId>
+            <artifactId>bsh</artifactId>
+        </dependency>
     </dependencies>
 </project>
