@@ -68,7 +68,7 @@ public class Database
 	private void openDb(File metaJsonFile) throws IOException
 	{
 		this.metaData = this.objectMapper.readerFor(MetaData.class).readValue(metaJsonFile);
-		if (!"1".equals(this.metaData.version))
+		if (1 != this.metaData.version)
 		{
 			throw new IllegalStateException("Version '" + this.metaData.version + "' is not supported.");
 		}
@@ -102,6 +102,8 @@ public class Database
 	{
 		this.dbDir.mkdirs();
 		this.objectMapper.writer().writeValue(metaJsonFile, this.metaData);
+		this.dirty = true;
+		flushIfDirty();
 	}
 
 	public void recordMigrationStarted(String migrationName, BigInteger checksum)
