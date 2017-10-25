@@ -1,4 +1,4 @@
-# Workspace Mechanic [![Build Status](https://travis-ci.org/cbuschka/workspace-mechanic.svg)](https://travis-ci.org/cbuschka/workspace-mechanic) [![Test Coverage](https://codecov.io/gh/cbuschka/workspace-mechanic/branch/master/graph/badge.svg)](https://codecov.io/gh/cbuschka/workspace-mechanic) [![Release](https://img.shields.io/github/release/cbuschka/workspace-mechanic.svg)](https://github.com/cbuschka/workspace-mechanic/releases/latest) [![License](https://img.shields.io/badge/License-GPL%203-yellow.svg)](http://www.gnu.org/licenses/)
+# Workspace Mechanic [![Build Status](https://travis-ci.org/cbuschka/workspace-mechanic.svg)](https://travis-ci.org/cbuschka/workspace-mechanic) [![Test Coverage](https://codecov.io/gh/cbuschka/workspace-mechanic/branch/master/graph/badge.svg)](https://codecov.io/gh/cbuschka/workspace-mechanic) [![Release](https://img.shields.io/github/release/cbuschka/workspace-mechanic.svg)](https://github.com/cbuschka/workspace-mechanic/releases/latest) [![License](https://img.shields.io/badge/License-APL%202.0-yellow.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
 ### Workspace Evolution Made Easy.
 
