@@ -1,0 +1,5 @@
+#!/bin/bash
+
+MECHANIC_INSTALLATION_DIR=$(cd `dirname $0`/.. && pwd)
+
+java -jar $MECHANIC_INSTALLATION_DIR/lib/workspace-mechanic.jar "$@"

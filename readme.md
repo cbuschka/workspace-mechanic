@@ -2,6 +2,10 @@
 
 ### Workspace Evolution Made Easy.
 
+A tool to automate the setup of developer workspaces.
+
+This is __NOT__ the [eclipse workspace mechanic](https://marketplace.eclipse.org/content/workspace-mechanic)!
+
 ## Status
 A prototype - Work in Progress!
 
@@ -19,5 +23,5 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
-You should have received a [copy of the GNU General Public License](LICENSE)
+You should have received a [copy of the GNU General Public License](license)
 along with this program.  If not, see [GNU GPL v3 at http://www.gnu.org](http://www.gnu.org/licenses/gpl-3.0.txt).
